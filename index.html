@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Finance | Home</title>
+<meta name="theme-color" content="#0b1220">
+<style>
+:root{
+  --bg:#f4f7fb;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#e6ebf2;
+  --navy:#0b1220;
+  --blue:#2563eb;
+  --blue-2:#3b82f6;
+  --green:#10b981;
+  --shadow:0 18px 50px rgba(15,23,42,.10);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%,rgba(59,130,246,.13),transparent 30%),
+    radial-gradient(circle at 95% 15%,rgba(16,185,129,.10),transparent 25%),
+    var(--bg);
+}
+.app{width:min(100%,560px);margin:auto;padding:18px 16px 28px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;color:#fff;font-size:21px;
+  background:linear-gradient(145deg,#2563eb,#0f3dba);
+  box-shadow:0 10px 24px rgba(37,99,235,.28);
+}
+.brand h1{font-size:18px;line-height:1.1;margin:0;font-weight:800;letter-spacing:-.4px}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:1.25px}
+.status{
+  display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);
+  background:rgba(255,255,255,.78);border-radius:999px;font-size:11px;font-weight:700;color:#475569
+}
+.dot{width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 0 4px rgba(16,185,129,.12)}
+.hero{
+  position:relative;overflow:hidden;border-radius:27px;padding:28px 25px 26px;
+  color:#fff;background:linear-gradient(135deg,#0b1220 0%,#13264d 54%,#1556c0 100%);
+  box-shadow:0 24px 60px rgba(11,18,32,.20);margin-bottom:18px
+}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.hero:before{width:210px;height:210px;right:-75px;top:-100px;background:rgba(59,130,246,.28)}
+.hero:after{width:150px;height:150px;left:-90px;bottom:-100px;background:rgba(16,185,129,.18)}
+.hero-content{position:relative;z-index:1}
+.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:#a9c7ff;font-weight:800}
+.hero h2{font-size:30px;line-height:1.08;letter-spacing:-1.2px;margin:10px 0 10px;max-width:400px}
+.hero p{margin:0;color:#cbd8ef;font-size:13px;line-height:1.55;max-width:430px}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin:22px 3px 10px}
+.section-head h3{margin:0;font-size:14px}
+.section-head span{font-size:10px;color:var(--muted);font-weight:700}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{
+  position:relative;overflow:hidden;min-height:188px;border:1px solid var(--line);
+  border-radius:23px;background:var(--surface);padding:18px;
+  box-shadow:0 10px 28px rgba(15,23,42,.07);cursor:pointer;
+  transition:.2s ease
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card:active{transform:scale(.985)}
+.card.blue{background:linear-gradient(145deg,#fff,#f1f6ff)}
+.card.green{background:linear-gradient(145deg,#fff,#effcf7)}
+.card-icon{
+  width:47px;height:47px;border-radius:15px;display:grid;place-items:center;
+  font-size:22px;margin-bottom:20px
+}
+.blue .card-icon{background:#dbeafe;color:#1d4ed8}
+.green .card-icon{background:#d1fae5;color:#047857}
+.card h4{margin:0 0 7px;font-size:17px;letter-spacing:-.35px}
+.card p{margin:0;color:var(--muted);font-size:11px;line-height:1.45}
+.arrow{
+  position:absolute;right:15px;bottom:15px;width:31px;height:31px;border-radius:10px;
+  display:grid;place-items:center;background:#fff;border:1px solid var(--line);font-weight:800
+}
+.quick{
+  border:1px solid var(--line);background:rgba(255,255,255,.82);border-radius:22px;
+  padding:7px;margin-top:12px;box-shadow:0 8px 25px rgba(15,23,42,.045)
+}
+.quick-row{
+  display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:15px;
+}
+.quick-row + .quick-row{border-top:1px solid #edf1f5}
+.qicon{width:35px;height:35px;border-radius:11px;background:#f1f5f9;display:grid;place-items:center;font-size:16px}
+.quick-row strong{display:block;font-size:12px}
+.quick-row small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.footer{text-align:center;color:#94a3b8;font-size:10px;margin-top:22px}
+@media(max-width:390px){
+  .app{padding:14px 12px 24px}
+  .hero{padding:23px 20px}
+  .hero h2{font-size:26px}
+  .card{min-height:178px;padding:15px}
+}
+@media(min-width:800px){
+  body{display:grid;place-items:center;padding:25px 0}
+  .app{background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.8);border-radius:32px;box-shadow:0 25px 80px rgba(15,23,42,.08)}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">₹</div>
+      <div>
+        <h1>My Finance</h1>
+        <p>PERSONAL FINANCE CONTROL</p>
+      </div>
+    </div>
+    <div class="status"><span class="dot"></span> System Live</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">Your money. One place.</div>
+      <h2>Manage Your Money Smarter.</h2>
+      <p>Track income, expenses, savings and investments with a simple, clear financial control center.</p>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h3>What would you like to do?</h3>
+    <span>QUICK ACCESS</span>
+  </div>
+
+  <section class="cards">
+    <article class="card blue" onclick="openMIS()">
+      <div class="card-icon">📊</div>
+      <h4>Finance MIS</h4>
+      <p>View balances, monthly performance, analytics, trends and transaction history.</p>
+      <div class="arrow">→</div>
+    </article>
+
+    <article class="card green" onclick="openEntry()">
+      <div class="card-icon">＋</div>
+      <h4>Add Transaction</h4>
+      <p>Quickly record income, expenses, savings or investments from your phone.</p>
+      <div class="arrow">→</div>
+    </article>
+  </section>
+
+  <div class="section-head">
+    <h3>Financial Control Center</h3>
+  </div>
+
+  <section class="quick">
+    <div class="quick-row">
+      <div class="qicon">💰</div>
+      <div><strong>Track your money</strong><small>Know where your money is going.</small></div>
+    </div>
+    <div class="quick-row">
+      <div class="qicon">📈</div>
+      <div><strong>Understand your trends</strong><small>Monitor monthly income, spending and growth.</small></div>
+    </div>
+    <div class="quick-row">
+      <div class="qicon">🎯</div>
+      <div><strong>Build better financial habits</strong><small>Keep savings and investments visible.</small></div>
+    </div>
+  </section>
+
+  <div class="footer">My Finance • Personal Financial Management</div>
+</main>
+
+<script>
+const MIS_URL = "https://script.google.com/macros/s/AKfycbwgbe-pzi-IJrAwJSzk8NNOjwM0mFL5sy0Hw4vEpRfU1Sag7fmGTIqip1QyjvFW29vSEQ/exec";
+const DATA_ENTRY_URL = "transactions.html";
+
+function openMIS(){ window.location.href = MIS_URL; }
+function openEntry(){ window.location.href = DATA_ENTRY_URL; }
+</script>
+</body>
+</html>

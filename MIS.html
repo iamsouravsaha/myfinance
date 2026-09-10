@@ -1,0 +1,3460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+<title>My Finance MIS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --bg:#f5f7fb;--card:#fff;--text:#182033;--muted:#718096;
+  --border:#e7ebf2;--primary:#5b5ce2;--primary2:#7c3aed;
+  --green:#16a34a;--red:#dc2626;--orange:#ea580c;--blue:#2563eb;
+  --sidebar:#111827;--sidebar2:#1f2454;--shadow:0 10px 30px rgba(15,23,42,.07);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+body.dark{--bg:#090e1a;--card:#111827;--text:#f3f4f6;--muted:#9aa7ba;--border:#263247;--shadow:0 10px 30px rgba(0,0,0,.2)}
+
+.app{max-width:none;margin:0;padding:0;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:250px;background:linear-gradient(180deg,var(--sidebar),var(--sidebar2));color:#fff;position:fixed;inset:0 auto 0 0;z-index:100;padding:22px 14px;display:flex;flex-direction:column}
+.side-brand{display:flex;align-items:center;gap:12px;padding:4px 10px 24px}
+.side-logo{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.13);display:grid;place-items:center;font-size:23px}
+.side-brand strong{display:block;font-size:16px}.side-brand span{font-size:10px;opacity:.55}
+.side-nav{display:flex;flex-direction:column;gap:6px}
+.nav-btn{border:0;background:transparent;color:#cbd5e1;text-align:left;padding:12px 13px;border-radius:12px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:13px;transition:.2s}
+.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-btn.active{background:rgba(255,255,255,.13);color:#fff;box-shadow:inset 3px 0 0 #a5b4fc}
+.nav-icon{width:22px;text-align:center;font-size:16px}
+.side-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:14px}
+.side-mini{padding:11px 12px;color:#cbd5e1;font-size:11px;line-height:1.5}
+.side-mini b{color:#fff}
+
+/* MAIN */
+.main{margin-left:250px;width:calc(100% - 250px);padding:22px 28px 36px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.page-title h1{font-size:25px;margin:0 0 4px;letter-spacing:-.4px}.page-title p{margin:0;color:var(--muted);font-size:12px}
+.top-actions{display:flex;gap:8px}
+.btn{border:1px solid var(--border);border-radius:11px;padding:10px 13px;background:var(--card);color:var(--text);font-weight:700;font-size:12px;box-shadow:0 2px 5px rgba(15,23,42,.03)}
+.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn-light{background:var(--card);color:var(--text)}
+
+.section{display:none}.section.active{display:block}
+
+/* FILTER */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:17px;box-shadow:var(--shadow)}
+select,input{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;outline:none}
+.search{min-width:230px;flex:1}
+
+/* HERO */
+.balance-card{background:linear-gradient(135deg,#151b2e,#353b88 58%,#5b3fb8);color:#fff;border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 15px 35px rgba(49,46,129,.18)}
+.balance-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.balance-label{opacity:.7;font-size:10px;font-weight:800;letter-spacing:.7px}.balance-value{font-size:35px;font-weight:850;margin-top:5px}.balance-formula{font-size:11px;opacity:.62;margin-top:7px}
+.balance-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:18px}
+.balance-mini-item{background:rgba(255,255,255,.09);padding:12px;border-radius:12px}.balance-mini-item span{display:block;font-size:10px;opacity:.65;margin-bottom:4px}.balance-mini-item strong{font-size:14px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;box-shadow:var(--shadow);transition:.2s}.kpi:hover{transform:translateY(-2px)}
+.kpi-head{display:flex;justify-content:space-between;align-items:center}.kpi-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;background:rgba(91,92,226,.08)}
+.kpi-title{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.4px;margin-top:11px}.kpi-value{font-size:21px;font-weight:850;margin-top:4px}.kpi-sub{font-size:10px;color:var(--muted);margin-top:5px}
+.income{color:var(--green)}.expense{color:var(--red)}.investment{color:var(--blue)}.savings{color:var(--orange)}
+
+/* CHARTS */
+.analytics{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:17px;min-height:330px;box-shadow:var(--shadow)}
+.chart-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.chart-title h3{margin:0;font-size:14px}.chart-title span{color:var(--muted);font-size:10px}.chart-wrap{height:255px;position:relative}
+
+/* INSIGHTS */
+.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.insight{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;box-shadow:var(--shadow)}
+.insight-label{color:var(--muted);font-size:10px;font-weight:800}.insight-value{font-size:17px;font-weight:850;margin-top:6px}.insight-desc{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* TABLE */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:17px;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow)}
+.table-head{padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.table-head h3{margin:0;font-size:14px}
+.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:850px}th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;text-align:left;padding:11px 16px;background:rgba(148,163,184,.06)}td{padding:12px 16px;border-top:1px solid var(--border);font-size:12px}
+.amount{font-weight:850}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:850}.badge-income{background:rgba(22,163,74,.1);color:var(--green)}.badge-expense{background:rgba(220,38,38,.1);color:var(--red)}.badge-investment{background:rgba(37,99,235,.1);color:var(--blue)}.badge-savings{background:rgba(234,88,12,.1);color:var(--orange)}
+.action-btn{border:0;background:transparent;cursor:pointer;font-size:15px;padding:5px}.empty{padding:35px;text-align:center;color:var(--muted)}
+
+/* MODAL / LOADING */
+.modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,.65);z-index:1000;padding:20px;align-items:center;justify-content:center}.modal.show{display:flex}.modal-box{width:100%;max-width:500px;background:var(--card);border-radius:20px;padding:20px;max-height:90vh;overflow-y:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal-head h3{margin:0}.form-group{margin-bottom:12px}.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:700}.form-group input,.form-group select,.form-group textarea{width:100%}textarea{min-height:80px;resize:vertical}.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.loading{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;z-index:2000}.loading.show{display:flex}.loader{background:var(--card);color:var(--text);padding:22px;border-radius:17px;text-align:center;font-size:12px}.spinner{width:32px;height:32px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MOBILE */
+.mobile-head{display:none}
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.analytics{grid-template-columns:1fr}}
+@media(max-width:700px){
+  .sidebar{width:72px;padding:15px 8px}.side-brand{padding:4px 4px 20px;justify-content:center}.side-brand>div:last-child,.side-mini{display:none}.side-logo{width:46px;height:46px}
+  .nav-btn{justify-content:center;padding:12px 8px}.nav-btn span:not(.nav-icon){display:none}.nav-icon{font-size:18px}
+  .main{margin-left:72px;width:calc(100% - 72px);padding:14px 10px 28px}.topbar{align-items:flex-start}.page-title h1{font-size:20px}.page-title p{font-size:10px}.top-actions .btn{font-size:0;padding:9px}.top-actions .btn:first-letter{font-size:16px}
+  .balance-card{padding:17px;border-radius:17px}.balance-value{font-size:29px}.balance-mini{grid-template-columns:repeat(2,1fr)}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:9px}.kpi{padding:12px}.kpi-value{font-size:18px}.insights{grid-template-columns:1fr}.filter-bar{align-items:stretch}.filter-bar select,.filter-bar input{width:100%}.search{min-width:0}.chart-card{padding:13px;min-height:310px}.chart-wrap{height:235px}
+}
+@media print{.sidebar,.top-actions,.filter-bar,.action-btn{display:none!important}.main{margin-left:0;width:100%;padding:0}.app{display:block}.chart-card,.kpi,.table-card,.balance-card{box-shadow:none}}
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+<aside class="sidebar">
+  <div class="side-brand">
+    <div class="side-logo">💰</div>
+    <div><strong>My Finance</strong><span>PERSONAL MIS</span></div>
+  </div>
+  <nav class="side-nav">
+    <button class="nav-btn active" onclick="showSection('overview',this)"><span class="nav-icon">📊</span><span>Overview</span></button>
+    <button class="nav-btn" onclick="showSection('analytics',this)"><span class="nav-icon">📈</span><span>Analytics</span></button>
+    <button class="nav-btn" onclick="showSection('transactions',this)"><span class="nav-icon">🧾</span><span>Transactions</span></button>
+    <button class="nav-btn" onclick="showSection('insights',this)"><span class="nav-icon">💡</span><span>Insights</span></button>
+  </nav>
+  <div class="side-bottom">
+    <div class="side-mini">Live data from<br><b>Google Sheets</b></div>
+  </div>
+</aside>
+<main class="main">
+
+
+
+<!-- =========================================
+     HEADER
+     ========================================= -->
+
+<header class="topbar">
+  <div class="page-title">
+    <h1>Finance Dashboard</h1>
+    <p>Personal Finance Control Center • Real-time MIS</p>
+  </div>
+  <div class="top-actions">
+    <button class="btn" onclick="toggleDarkMode()">🌙 Theme</button>
+    <button class="btn" onclick="printReport()">🖨️ Report</button>
+    <button class="btn btn-primary" onclick="loadMIS()">🔄 Refresh</button>
+  </div>
+</header>
+
+
+<!-- =========================================
+     FILTERS
+     ========================================= -->
+
+<div id="overview" class="section active"><section class="filter-bar">
+
+  <select
+    id="periodFilter"
+    onchange="applyFilter()">
+
+    <option value="current">
+      📅 Current Month
+    </option>
+
+    <option value="all">
+      📊 All Time
+    </option>
+
+  </select>
+
+
+  <select
+    id="yearFilter"
+    onchange="applyFilter()">
+
+    <option value="all">
+      All Years
+    </option>
+
+  </select>
+
+
+  <input
+    class="search"
+    id="searchBox"
+    placeholder="🔎 Search transactions..."
+    oninput="renderTransactions()">
+
+</section>
+
+
+<!-- =========================================
+     BALANCE HERO
+     ========================================= -->
+
+<section class="balance-card">
+
+  <div class="balance-top">
+
+    <div>
+
+      <div class="balance-label">
+        💵 TOTAL IN-HAND
+      </div>
+
+      <div
+        class="balance-value"
+        id="inHand">
+
+        ₹0
+
+      </div>
+
+      <div class="balance-formula">
+
+        Actual Bank + Cash available for spending
+
+      </div>
+
+    </div>
+
+
+    <div>
+
+      <div class="balance-label">
+        🏦 TOTAL FINANCIAL ASSETS
+      </div>
+
+      <div
+        class="balance-value"
+        style="font-size:26px"
+        id="assets">
+
+        ₹0
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="balance-mini">
+
+    <div class="balance-mini-item">
+
+      <span>
+        🏦 Bank
+      </span>
+
+      <strong id="heroBank">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <div class="balance-mini-item">
+
+      <span>
+        💴 Cash
+      </span>
+
+      <strong id="heroCash">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <div class="balance-mini-item">
+
+      <span>
+        🏦 Savings
+      </span>
+
+      <strong id="heroSavings">
+        ₹0
+      </strong>
+
+    </div>
+
+
+    <div class="balance-mini-item">
+
+      <span>
+        📈 Investments
+      </span>
+
+      <strong id="heroInvestment">
+        ₹0
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================
+     KPI
+     ========================================= -->
+
+<section class="kpi-grid">
+
+
+<div class="kpi">
+
+  <div class="kpi-head">
+
+    <span>
+      💰
+    </span>
+
+    <div class="kpi-icon">
+      💰
+    </div>
+
+  </div>
+
+  <div class="kpi-title">
+    TOTAL INCOME
+  </div>
+
+  <div
+    class="kpi-value income"
+    id="income">
+
+    ₹0
+
+  </div>
+
+  <div class="kpi-sub">
+    Money received
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    💸
+  </div>
+
+  <div class="kpi-title">
+    TOTAL EXPENSE
+  </div>
+
+  <div
+    class="kpi-value expense"
+    id="expense">
+
+    ₹0
+
+  </div>
+
+  <div class="kpi-sub">
+    Money spent
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    🏦
+  </div>
+
+  <div class="kpi-title">
+    TOTAL SAVINGS
+  </div>
+
+  <div
+    class="kpi-value savings"
+    id="savings">
+
+    ₹0
+
+  </div>
+
+  <div
+    class="kpi-sub"
+    id="savingsRate">
+
+    Savings rate: 0%
+
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    📈
+  </div>
+
+  <div class="kpi-title">
+    TOTAL INVESTMENT
+  </div>
+
+  <div
+    class="kpi-value investment"
+    id="investment">
+
+    ₹0
+
+  </div>
+
+  <div
+    class="kpi-sub"
+    id="investmentRate">
+
+    Investment rate: 0%
+
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    🏦
+  </div>
+
+  <div class="kpi-title">
+    BANK BALANCE
+  </div>
+
+  <div
+    class="kpi-value"
+    id="bank">
+
+    ₹0
+
+  </div>
+
+  <div class="kpi-sub">
+    Available bank balance
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    💴
+  </div>
+
+  <div class="kpi-title">
+    CASH BALANCE
+  </div>
+
+  <div
+    class="kpi-value"
+    id="cash">
+
+    ₹0
+
+  </div>
+
+  <div class="kpi-sub">
+    Available cash
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    📊
+  </div>
+
+  <div class="kpi-title">
+    NET CASH FLOW
+  </div>
+
+  <div
+    class="kpi-value"
+    id="net">
+
+    ₹0
+
+  </div>
+
+  <div class="kpi-sub">
+    After savings & investment
+  </div>
+
+</div>
+
+
+<div class="kpi">
+
+  <div class="kpi-icon">
+    ⚡
+  </div>
+
+  <div class="kpi-title">
+    EXPENSE RATE
+  </div>
+
+  <div
+    class="kpi-value"
+    id="expenseRate">
+
+    0%
+
+  </div>
+
+  <div class="kpi-sub">
+    Expense / Income
+  </div>
+
+</div>
+
+
+</section></div>
+
+<div id="periodContext"
+     style="font-size:12px;color:var(--muted);margin:-6px 0 12px 4px;font-weight:700;">
+  Showing current month transactions
+</div>
+
+
+<!-- =========================================
+     CHART 1 + 2
+     ========================================= -->
+
+<div id="analytics" class="section "><section class="analytics">
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      📈 Monthly Financial Trend
+    </h3>
+
+    <span>
+      Income / Expense / Savings / Investment
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="monthlyChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      🥧 Expense Breakdown
+    </h3>
+
+    <span>
+      Where money is going
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="expenseChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+</section>
+
+
+<!-- =========================================
+     CHART 3 + 4
+     ========================================= -->
+
+<section class="analytics">
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      💰 Income Breakdown
+    </h3>
+
+    <span>
+      Income sources
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="incomeChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      🏦 Savings vs Investment
+    </h3>
+
+    <span>
+      Asset allocation
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="assetChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+</section>
+
+
+<!-- =========================================
+     CHART 5 + 6
+     ========================================= -->
+
+<section class="analytics">
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      💳 Bank vs Cash
+    </h3>
+
+    <span>
+      Transaction movement
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="modeChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+<div class="chart-card">
+
+  <div class="chart-title">
+
+    <h3>
+      📉 Expense Trend
+    </h3>
+
+    <span>
+      Monthly spending
+    </span>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <canvas
+      id="expenseTrendChart">
+    </canvas>
+
+  </div>
+
+</div>
+
+
+</section></div>
+
+
+<!-- =========================================
+     INSIGHTS
+     ========================================= -->
+
+<div id="insights" class="section "><section class="insights">
+
+
+<div class="insight">
+
+  <div class="insight-label">
+    💡 HIGHEST EXPENSE CATEGORY
+  </div>
+
+  <div
+    class="insight-value"
+    id="highestExpense">
+
+    -
+
+  </div>
+
+  <div
+    class="insight-desc"
+    id="highestExpenseAmount">
+
+    ₹0
+
+  </div>
+
+</div>
+
+
+<div class="insight">
+
+  <div class="insight-label">
+    🏆 BEST SAVING MONTH
+  </div>
+
+  <div
+    class="insight-value"
+    id="bestSavingMonth">
+
+    -
+
+  </div>
+
+  <div
+    class="insight-desc"
+    id="bestSavingAmount">
+
+    ₹0
+
+  </div>
+
+</div>
+
+
+<div class="insight">
+
+  <div class="insight-label">
+    ⚠️ FINANCIAL STATUS
+  </div>
+
+  <div
+    class="insight-value"
+    id="financialStatus">
+
+    Healthy
+
+  </div>
+
+  <div
+    class="insight-desc"
+    id="financialStatusDesc">
+
+    Monitoring your financial position
+
+  </div>
+
+</div>
+
+
+</section></div>
+
+
+<!-- =========================================
+     TRANSACTIONS
+     ========================================= -->
+
+<div id="transactions" class="section "><section class="table-card">
+
+<div class="table-head">
+
+  <h3>
+    🧾 Transaction History
+  </h3>
+
+  <span
+    style="font-size:12px;color:var(--muted)"
+    id="transactionCount">
+
+    0 transactions
+
+  </span>
+
+</div>
+
+
+<div class="table-scroll">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Type</th>
+
+<th>Category</th>
+
+<th>Mode</th>
+
+<th>Amount</th>
+
+<th>Notes</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+
+<tbody
+  id="transactionBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+</section></div>
+
+
+</div>
+
+
+</main></div>
+
+<!-- =========================================
+     EDIT MODAL
+     ========================================= -->
+
+<div
+  class="modal"
+  id="editModal">
+
+<div class="modal-box">
+
+
+<div class="modal-head">
+
+<h3>
+✏️ Edit Transaction
+</h3>
+
+<button
+  class="action-btn"
+  onclick="closeModal()">
+
+✖
+
+</button>
+
+</div>
+
+
+<input
+  type="hidden"
+  id="editId">
+
+
+<div class="form-group">
+
+<label>
+Date
+</label>
+
+<input
+  type="date"
+  id="editDate">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Source Type
+</label>
+
+<select
+  id="editSource"
+  onchange="loadEditSubTypes()">
+
+<option>
+Select
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Sub Type
+</label>
+
+<select
+  id="editSubType">
+
+<option>
+Select
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Transaction Mode
+</label>
+
+<select
+  id="editMode">
+
+<option>
+Bank
+</option>
+
+<option>
+Cash
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Amount
+</label>
+
+<input
+  type="number"
+  id="editAmount"
+  min="0"
+  step="0.01">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Notes
+</label>
+
+<textarea
+  id="editNotes">
+</textarea>
+
+</div>
+
+
+<div class="modal-actions">
+
+<button
+  class="btn"
+  onclick="closeModal()">
+
+Cancel
+
+</button>
+
+
+<button
+  class="btn btn-primary"
+  onclick="saveEdit()">
+
+💾 Update
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================
+     LOADING
+     ========================================= -->
+
+<div
+  class="loading"
+  id="loading">
+
+<div class="loader">
+
+<div class="spinner"></div>
+
+Loading Finance MIS...
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/*************************************************
+ * API URL
+ *************************************************/
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwgbe-pzi-IJrAwJSzk8NNOjwM0mFL5sy0Hw4vEpRfU1Sag7fmGTIqip1QyjvFW29vSEQ/exec";
+
+
+/*************************************************
+ * GLOBAL
+ *************************************************/
+
+let MIS_DATA = null;
+
+let MASTER_DATA = {};
+
+let charts = {};
+
+
+/*************************************************
+ * MONEY
+ *************************************************/
+
+function money(value) {
+
+  return "₹" +
+    Number(value || 0)
+      .toLocaleString(
+        "en-IN",
+        {
+          maximumFractionDigits: 0
+        }
+      );
+
+}
+
+
+/*************************************************
+ * NUMBER
+ *************************************************/
+
+function num(value) {
+
+  return Number(value || 0);
+
+}
+
+
+/*************************************************
+ * JSONP
+ *************************************************/
+
+function apiCall(
+  action,
+  params = {}
+) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        "callback_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random() * 10000
+        );
+
+
+      window[callbackName] =
+        function(response) {
+
+          delete window[
+            callbackName
+          ];
+
+
+          const script =
+            document.getElementById(
+              callbackName
+            );
+
+
+          if (script) {
+
+            script.remove();
+
+          }
+
+
+          if (
+            response &&
+            response.success
+          ) {
+
+            resolve(
+              response
+            );
+
+          }
+
+          else {
+
+            reject(
+              new Error(
+                response?.message ||
+                "API error"
+              )
+            );
+
+          }
+
+        };
+
+
+      const query =
+        new URLSearchParams();
+
+
+      query.set(
+        "action",
+        action
+      );
+
+
+      query.set(
+        "callback",
+        callbackName
+      );
+
+
+      Object.keys(params)
+        .forEach(
+          function(key) {
+
+            query.set(
+              key,
+              params[key]
+            );
+
+          }
+        );
+
+
+      const script =
+        document.createElement(
+          "script"
+        );
+
+      const timeout =
+        setTimeout(function() {
+          delete window[callbackName];
+          if (script.parentNode) script.remove();
+          reject(
+            new Error(
+              "Google Apps Script response timed out. Please check the Web App deployment and access setting."
+            )
+          );
+        }, 15000);
+
+      const originalCallback =
+        window[callbackName];
+
+      window[callbackName] =
+        function(response) {
+          clearTimeout(timeout);
+          originalCallback(response);
+        };
+
+
+      script.id =
+        callbackName;
+
+
+      script.src =
+        API_URL +
+        "?" +
+        query.toString();
+
+
+      script.onerror =
+        function() {
+
+          delete window[
+            callbackName
+          ];
+
+          script.remove();
+
+          reject(
+            new Error(
+              "Unable to connect with Google Sheet."
+            )
+          );
+
+        };
+
+
+      document.body.appendChild(
+        script
+      );
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * LOADING
+ *************************************************/
+
+function setLoading(
+  show
+) {
+
+  document
+    .getElementById(
+      "loading"
+    )
+    .classList.toggle(
+      "show",
+      show
+    );
+
+}
+
+
+/*************************************************
+ * LOAD MIS
+ *************************************************/
+
+async function loadMIS() {
+
+  try {
+
+    setLoading(true);
+
+
+    const response =
+      await apiCall(
+        "mis"
+      );
+
+
+    MIS_DATA =
+      response.data;
+
+
+    await loadMaster();
+
+
+    populateYears();
+
+
+    renderDashboard();
+
+
+  }
+
+  catch(error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+  finally {
+
+    setLoading(false);
+
+  }
+
+}
+
+
+/*************************************************
+ * MASTER
+ *************************************************/
+
+async function loadMaster() {
+
+  try {
+
+    const response =
+      await apiCall(
+        "master"
+      );
+
+
+    MASTER_DATA =
+      response.data || {};
+
+
+  }
+
+  catch(error) {
+
+    console.log(
+      error
+    );
+
+  }
+
+}
+
+
+/*************************************************
+ * YEARS
+ *************************************************/
+
+function populateYears() {
+
+  const select =
+    document.getElementById(
+      "yearFilter"
+    );
+
+
+  const current =
+    select.value;
+
+
+  select.innerHTML = `
+
+    <option value="all">
+      All Years
+    </option>
+
+  `;
+
+
+  const years =
+    MIS_DATA.yearly || [];
+
+
+  years.forEach(
+    function(item) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        item.year;
+
+
+      option.textContent =
+        item.year;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  select.value =
+    current || "all";
+
+}
+
+
+/*************************************************
+ * RENDER
+ *************************************************/
+
+function renderDashboard() {
+
+  applyFilter();
+
+}
+
+
+/*************************************************
+ * FILTER
+ *************************************************/
+
+function getFilteredTransactions() {
+
+  if (!MIS_DATA)
+    return [];
+
+
+  let data =
+    MIS_DATA.transactions
+      .slice();
+
+
+  const period =
+    document.getElementById(
+      "periodFilter"
+    ).value;
+
+
+  const year =
+    document.getElementById(
+      "yearFilter"
+    ).value;
+
+
+  if (
+    period === "current"
+  ) {
+
+    const now =
+      new Date();
+
+
+    const month =
+      now.toLocaleString(
+        "en-US",
+        {
+          month: "short"
+        }
+      );
+
+
+    const currentYear =
+      now.getFullYear();
+
+
+    const target =
+      month +
+      " " +
+      currentYear;
+
+
+    data =
+      data.filter(
+        tx =>
+          tx.monthYear ===
+          target
+      );
+
+  }
+
+
+  if (
+    year !== "all"
+  ) {
+
+    data =
+      data.filter(
+        tx =>
+          String(tx.year) ===
+          String(year)
+      );
+
+  }
+
+
+  return data;
+
+}
+
+
+/*************************************************
+ * APPLY FILTER
+ *************************************************/
+
+function applyFilter() {
+
+  const period =
+    document.getElementById("periodFilter").value;
+
+  const year =
+    document.getElementById("yearFilter").value;
+
+  const context = document.getElementById("periodContext");
+
+  if (context) {
+    if (period === "current" && year === "all") {
+      context.textContent = "📅 Showing current month transactions • Actual balances shown separately";
+    } else if (period === "all" && year === "all") {
+      context.textContent = "📊 Showing all transactions • Actual balances shown";
+    } else if (year !== "all") {
+      context.textContent = "📆 Showing " + year + " transactions • Actual balances shown separately";
+    } else {
+      context.textContent = "📊 Showing selected period • Actual balances shown separately";
+    }
+  }
+
+  const transactions =
+    getFilteredTransactions();
+
+
+  const summary =
+    calculateSummary(
+      transactions
+    );
+
+
+  renderSummary(
+    summary
+  );
+
+
+  renderCharts(
+    transactions
+  );
+
+
+  renderTransactions(
+    transactions
+  );
+
+
+  renderInsights(
+    transactions
+  );
+
+}
+
+
+/*************************************************
+ * SUMMARY
+ *************************************************/
+
+function calculateSummary(
+  transactions
+) {
+
+  let income = 0;
+
+  let expense = 0;
+
+  let savings = 0;
+
+  let investment = 0;
+
+
+  let bankMovement = 0;
+
+  let cashMovement = 0;
+
+
+  transactions.forEach(
+    function(tx) {
+
+      const amount =
+        num(tx.amount);
+
+
+      if (
+        tx.sourceType ===
+        "Income"
+      ) {
+
+        income += amount;
+
+        if (
+          tx.mode ===
+          "Bank"
+        )
+          bankMovement +=
+            amount;
+
+        if (
+          tx.mode ===
+          "Cash"
+        )
+          cashMovement +=
+            amount;
+
+      }
+
+
+      else if (
+        tx.sourceType ===
+        "Expense"
+      ) {
+
+        expense += amount;
+
+        if (
+          tx.mode ===
+          "Bank"
+        )
+          bankMovement -=
+            amount;
+
+        if (
+          tx.mode ===
+          "Cash"
+        )
+          cashMovement -=
+            amount;
+
+      }
+
+
+      else if (
+        tx.sourceType ===
+        "Savings"
+      ) {
+
+        savings += amount;
+
+        if (
+          tx.mode ===
+          "Bank"
+        )
+          bankMovement -=
+            amount;
+
+        if (
+          tx.mode ===
+          "Cash"
+        )
+          cashMovement -=
+            amount;
+
+      }
+
+
+      else if (
+        tx.sourceType ===
+        "Investment"
+      ) {
+
+        investment +=
+          amount;
+
+        if (
+          tx.mode ===
+          "Bank"
+        )
+          bankMovement -=
+            amount;
+
+        if (
+          tx.mode ===
+          "Cash"
+        )
+          cashMovement -=
+            amount;
+
+      }
+
+    }
+  );
+
+
+  const net =
+    income -
+    expense -
+    savings -
+    investment;
+
+
+  return {
+
+    income,
+
+    expense,
+
+    savings,
+
+    investment,
+
+    net,
+
+    movement:
+      bankMovement +
+      cashMovement,
+
+    bankMovement,
+
+    cashMovement,
+
+    savingsRate:
+      income > 0
+        ? savings /
+          income *
+          100
+        : 0,
+
+    investmentRate:
+      income > 0
+        ? investment /
+          income *
+          100
+        : 0,
+
+    expenseRate:
+      income > 0
+        ? expense /
+          income *
+          100
+        : 0
+
+  };
+
+}
+
+
+/*************************************************
+ * SUMMARY UI
+ *************************************************/
+
+function renderSummary(
+  data
+) {
+
+  const current =
+    document.getElementById(
+      "periodFilter"
+    ).value;
+
+
+  /*
+   * All-time uses actual calculated
+   * balance from backend.
+   */
+
+  if (
+    current === "all" &&
+    document.getElementById(
+      "yearFilter"
+    ).value === "all"
+  ) {
+
+    const s =
+      MIS_DATA.summary;
+
+
+    setText(
+      "inHand",
+      money(s.inHand)
+    );
+
+
+    setText(
+      "assets",
+      money(s.totalFinancialAssets)
+    );
+
+
+    setText(
+      "heroBank",
+      money(s.bank)
+    );
+
+
+    setText(
+      "heroCash",
+      money(s.cash)
+    );
+
+
+    setText(
+      "heroSavings",
+      money(s.savingsBalance)
+    );
+
+
+    setText(
+      "heroInvestment",
+      money(s.investmentBalance)
+    );
+
+  }
+
+  else {
+
+    // Keep actual financial position separate from
+    // the selected period's transaction movement.
+    const s = MIS_DATA.summary || {};
+
+    setText(
+      "inHand",
+      money(s.inHand)
+    );
+
+    setText(
+      "assets",
+      money(s.totalFinancialAssets)
+    );
+
+    setText(
+      "heroBank",
+      money(s.bank)
+    );
+
+    setText(
+      "heroCash",
+      money(s.cash)
+    );
+
+    setText(
+      "heroSavings",
+      money(s.savingsBalance)
+    );
+
+    setText(
+      "heroInvestment",
+      money(s.investmentBalance)
+    );
+
+  }
+
+
+  setText(
+    "income",
+    money(data.income)
+  );
+
+
+  setText(
+    "expense",
+    money(data.expense)
+  );
+
+
+  setText(
+    "savings",
+    money(data.savings)
+  );
+
+
+  setText(
+    "investment",
+    money(data.investment)
+  );
+
+
+  setText(
+    "bank",
+    money(MIS_DATA.summary.bank)
+  );
+
+
+  setText(
+    "cash",
+    money(MIS_DATA.summary.cash)
+  );
+
+
+  setText(
+    "net",
+    money(data.net)
+  );
+
+
+  setText(
+    "savingsRate",
+    "Savings rate: " +
+    data.savingsRate.toFixed(1) +
+    "%"
+  );
+
+
+  setText(
+    "investmentRate",
+    "Investment rate: " +
+    data.investmentRate.toFixed(1) +
+    "%"
+  );
+
+
+  setText(
+    "expenseRate",
+    data.expenseRate.toFixed(1) +
+    "%"
+  );
+
+}
+
+
+/*************************************************
+ * CHARTS
+ *************************************************/
+
+function renderCharts(
+  transactions
+) {
+
+  renderMonthlyChart(
+    transactions
+  );
+
+
+  renderExpenseChart(
+    transactions
+  );
+
+
+  renderIncomeChart(
+    transactions
+  );
+
+
+  renderAssetChart(
+    transactions
+  );
+
+
+  renderModeChart(
+    transactions
+  );
+
+
+  renderExpenseTrend(
+    transactions
+  );
+
+}
+
+
+/*************************************************
+ * MONTHLY CHART
+ *************************************************/
+
+function renderMonthlyChart(
+  transactions
+) {
+
+  const map = {};
+
+
+  transactions.forEach(
+    function(tx) {
+
+      if (
+        !map[tx.monthYear]
+      ) {
+
+        map[tx.monthYear] = {
+
+          income: 0,
+
+          expense: 0,
+
+          savings: 0,
+
+          investment: 0
+
+        };
+
+      }
+
+
+      const amount =
+        num(tx.amount);
+
+
+      if (
+        tx.sourceType ===
+        "Income"
+      )
+        map[tx.monthYear]
+          .income += amount;
+
+
+      if (
+        tx.sourceType ===
+        "Expense"
+      )
+        map[tx.monthYear]
+          .expense += amount;
+
+
+      if (
+        tx.sourceType ===
+        "Savings"
+      )
+        map[tx.monthYear]
+          .savings += amount;
+
+
+      if (
+        tx.sourceType ===
+        "Investment"
+      )
+        map[tx.monthYear]
+          .investment += amount;
+
+    }
+  );
+
+
+  const labels =
+    Object.keys(map);
+
+
+  createChart(
+    "monthlyChart",
+    "line",
+    {
+
+      labels,
+
+      datasets: [
+
+        dataset(
+          "Income",
+          labels.map(
+            x =>
+              map[x].income
+          )
+        ),
+
+        dataset(
+          "Expense",
+          labels.map(
+            x =>
+              map[x].expense
+          )
+        ),
+
+        dataset(
+          "Savings",
+          labels.map(
+            x =>
+              map[x].savings
+          )
+        ),
+
+        dataset(
+          "Investment",
+          labels.map(
+            x =>
+              map[x].investment
+          )
+        )
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * EXPENSE CHART
+ *************************************************/
+
+function renderExpenseChart(
+  transactions
+) {
+
+  const map = {};
+
+
+  transactions
+    .filter(
+      tx =>
+        tx.sourceType ===
+        "Expense"
+    )
+    .forEach(
+      function(tx) {
+
+        map[tx.subType] =
+          (
+            map[tx.subType] ||
+            0
+          ) +
+          num(tx.amount);
+
+      }
+    );
+
+
+  createChart(
+    "expenseChart",
+    "doughnut",
+    {
+
+      labels:
+        Object.keys(map),
+
+      datasets: [
+
+        {
+
+          data:
+            Object.values(map),
+
+          borderWidth: 0
+
+        }
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * INCOME CHART
+ *************************************************/
+
+function renderIncomeChart(
+  transactions
+) {
+
+  const map = {};
+
+
+  transactions
+    .filter(
+      tx =>
+        tx.sourceType ===
+        "Income"
+    )
+    .forEach(
+      function(tx) {
+
+        map[tx.subType] =
+          (
+            map[tx.subType] ||
+            0
+          ) +
+          num(tx.amount);
+
+      }
+    );
+
+
+  createChart(
+    "incomeChart",
+    "doughnut",
+    {
+
+      labels:
+        Object.keys(map),
+
+      datasets: [
+
+        {
+
+          data:
+            Object.values(map),
+
+          borderWidth: 0
+
+        }
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * ASSET CHART
+ *************************************************/
+
+function renderAssetChart(
+  transactions
+) {
+
+  let savings = 0;
+
+  let investment = 0;
+
+
+  transactions.forEach(
+    function(tx) {
+
+      if (
+        tx.sourceType ===
+        "Savings"
+      )
+        savings +=
+          num(tx.amount);
+
+
+      if (
+        tx.sourceType ===
+        "Investment"
+      )
+        investment +=
+          num(tx.amount);
+
+    }
+  );
+
+
+  createChart(
+    "assetChart",
+    "bar",
+    {
+
+      labels: [
+        "Savings",
+        "Investment"
+      ],
+
+      datasets: [
+
+        {
+
+          label:
+            "Amount",
+
+          data: [
+            savings,
+            investment
+          ],
+
+          borderRadius: 8
+
+        }
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * MODE CHART
+ *************************************************/
+
+function renderModeChart(
+  transactions
+) {
+
+  let bank = 0;
+
+  let cash = 0;
+
+
+  transactions.forEach(
+    function(tx) {
+
+      const amount =
+        num(tx.amount);
+
+
+      if (
+        tx.mode ===
+        "Bank"
+      )
+        bank += amount;
+
+
+      if (
+        tx.mode ===
+        "Cash"
+      )
+        cash += amount;
+
+    }
+  );
+
+
+  createChart(
+    "modeChart",
+    "bar",
+    {
+
+      labels: [
+        "Bank",
+        "Cash"
+      ],
+
+      datasets: [
+
+        {
+
+          label:
+            "Transaction Value",
+
+          data: [
+            bank,
+            cash
+          ],
+
+          borderRadius: 8
+
+        }
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * EXPENSE TREND
+ *************************************************/
+
+function renderExpenseTrend(
+  transactions
+) {
+
+  const map = {};
+
+
+  transactions
+    .filter(
+      tx =>
+        tx.sourceType ===
+        "Expense"
+    )
+    .forEach(
+      function(tx) {
+
+        map[tx.monthYear] =
+          (
+            map[tx.monthYear] ||
+            0
+          ) +
+          num(tx.amount);
+
+      }
+    );
+
+
+  const labels =
+    Object.keys(map);
+
+
+  createChart(
+    "expenseTrendChart",
+    "line",
+    {
+
+      labels,
+
+      datasets: [
+
+        dataset(
+          "Expense",
+          labels.map(
+            x =>
+              map[x]
+          )
+        )
+
+      ]
+
+    }
+  );
+
+}
+
+
+/*************************************************
+ * DATASET
+ *************************************************/
+
+function dataset(
+  label,
+  data
+) {
+
+  return {
+
+    label,
+
+    data,
+
+    tension: .35,
+
+    borderWidth: 2,
+
+    fill: false,
+
+    pointRadius: 3
+
+  };
+
+}
+
+
+/*************************************************
+ * CHART CREATOR
+ *************************************************/
+
+function createChart(
+  id,
+  type,
+  data
+) {
+
+  if (
+    charts[id]
+  ) {
+
+    charts[id].destroy();
+
+  }
+
+
+  const canvas =
+    document.getElementById(
+      id
+    );
+
+
+  charts[id] =
+    new Chart(
+      canvas,
+      {
+
+        type,
+
+        data,
+
+        options: {
+
+          responsive: true,
+
+          maintainAspectRatio:
+            false,
+
+          plugins: {
+
+            legend: {
+
+              position:
+                "bottom"
+
+            },
+
+            tooltip: {
+
+              callbacks: {
+
+                label:
+                  function(context) {
+
+                    return (
+                      context.dataset
+                        .label +
+                      ": " +
+                      money(
+                        context.raw
+                      )
+                    );
+
+                  }
+
+              }
+
+            }
+
+          },
+
+          scales:
+            type === "doughnut"
+              ? {}
+              : {
+
+                  y: {
+
+                    beginAtZero:
+                      true,
+
+                    ticks: {
+
+                      callback:
+                        function(value) {
+
+                          return money(
+                            value
+                          );
+
+                        }
+
+                    }
+
+                  }
+
+                }
+
+        }
+
+      }
+    );
+
+}
+
+
+/*************************************************
+ * INSIGHTS
+ *************************************************/
+
+function renderInsights(
+  transactions
+) {
+
+  const expenseMap = {};
+
+  const savingMonth = {};
+
+
+  transactions.forEach(
+    function(tx) {
+
+      const amount =
+        num(tx.amount);
+
+
+      if (
+        tx.sourceType ===
+        "Expense"
+      ) {
+
+        expenseMap[
+          tx.subType
+        ] =
+          (
+            expenseMap[
+              tx.subType
+            ] || 0
+          ) +
+          amount;
+
+      }
+
+
+      if (
+        tx.sourceType ===
+        "Savings"
+      ) {
+
+        savingMonth[
+          tx.monthYear
+        ] =
+          (
+            savingMonth[
+              tx.monthYear
+            ] || 0
+          ) +
+          amount;
+
+      }
+
+    }
+  );
+
+
+  const highest =
+    getHighest(
+      expenseMap
+    );
+
+
+  const best =
+    getHighest(
+      savingMonth
+    );
+
+
+  setText(
+    "highestExpense",
+    highest.name
+  );
+
+
+  setText(
+    "highestExpenseAmount",
+    money(
+      highest.amount
+    )
+  );
+
+
+  setText(
+    "bestSavingMonth",
+    best.name
+  );
+
+
+  setText(
+    "bestSavingAmount",
+    money(
+      best.amount
+    )
+  );
+
+
+  const summary =
+    calculateSummary(
+      transactions
+    );
+
+
+  let status =
+    "Healthy";
+
+
+  let description =
+    "Your financial position looks positive.";
+
+
+  if (
+    summary.net < 0
+  ) {
+
+    status =
+      "⚠️ Attention Needed";
+
+
+    description =
+      "Expenses and allocations are higher than income.";
+
+  }
+
+
+  else if (
+    summary.expenseRate > 80
+  ) {
+
+    status =
+      "⚠️ High Spending";
+
+
+    description =
+      "Your expense ratio is relatively high.";
+
+  }
+
+
+  else if (
+    summary.savingsRate >= 20
+  ) {
+
+    status =
+      "🏆 Excellent";
+
+
+    description =
+      "You are maintaining a strong savings habit.";
+
+  }
+
+
+  setText(
+    "financialStatus",
+    status
+  );
+
+
+  setText(
+    "financialStatusDesc",
+    description
+  );
+
+}
+
+
+/*************************************************
+ * HIGHEST
+ *************************************************/
+
+function getHighest(
+  object
+) {
+
+  const keys =
+    Object.keys(object);
+
+
+  if (!keys.length) {
+
+    return {
+
+      name: "-",
+
+      amount: 0
+
+    };
+
+  }
+
+
+  let key =
+    keys[0];
+
+
+  keys.forEach(
+    function(x) {
+
+      if (
+        object[x] >
+        object[key]
+      ) {
+
+        key = x;
+
+      }
+
+    }
+  );
+
+
+  return {
+
+    name: key,
+
+    amount:
+      object[key]
+
+  };
+
+}
+
+
+/*************************************************
+ * TRANSACTIONS
+ *************************************************/
+
+function renderTransactions(
+  transactions
+) {
+
+  const search =
+    document.getElementById(
+      "searchBox"
+    ).value
+      .toLowerCase()
+      .trim();
+
+
+  const filtered =
+    transactions.filter(
+      function(tx) {
+
+        const text = (
+
+          tx.date +
+          " " +
+          tx.sourceType +
+          " " +
+          tx.subType +
+          " " +
+          tx.mode +
+          " " +
+          tx.notes
+
+        ).toLowerCase();
+
+
+        return text.includes(
+          search
+        );
+
+      }
+    );
+
+
+  const tbody =
+    document.getElementById(
+      "transactionBody"
+    );
+
+
+  tbody.innerHTML = "";
+
+
+  setText(
+    "transactionCount",
+    filtered.length +
+    (
+      filtered.length === 1
+        ? " transaction"
+        : " transactions"
+    )
+  );
+
+
+  if (
+    !filtered.length
+  ) {
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="7"
+          class="empty">
+
+          No transactions found.
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+
+  filtered
+    .slice()
+    .reverse()
+    .forEach(
+      function(tx) {
+
+        const tr =
+          document.createElement(
+            "tr"
+          );
+
+
+        const typeClass =
+          tx.sourceType
+            .toLowerCase();
+
+
+        const badgeClass =
+          "badge-" +
+          typeClass;
+
+
+        tr.innerHTML = `
+
+          <td>
+            ${escapeHTML(tx.date)}
+          </td>
+
+          <td>
+            <span class="badge ${badgeClass}">
+              ${escapeHTML(tx.sourceType)}
+            </span>
+          </td>
+
+          <td>
+            ${escapeHTML(tx.subType)}
+          </td>
+
+          <td>
+            ${escapeHTML(tx.mode)}
+          </td>
+
+          <td
+            class="amount ${typeClass}">
+
+            ${money(tx.amount)}
+
+          </td>
+
+          <td>
+            ${escapeHTML(
+              tx.notes || "-"
+            )}
+          </td>
+
+          <td>
+
+            <button
+              class="action-btn"
+              onclick="openEdit('${escapeAttr(tx.id)}')"
+              title="Edit">
+
+              ✏️
+
+            </button>
+
+
+            <button
+              class="action-btn"
+              onclick="deleteTx('${escapeAttr(tx.id)}')"
+              title="Delete">
+
+              🗑️
+
+            </button>
+
+          </td>
+
+        `;
+
+
+        tbody.appendChild(
+          tr
+        );
+
+      }
+    );
+
+}
+
+
+/*************************************************
+ * EDIT
+ *************************************************/
+
+function openEdit(
+  id
+) {
+
+  const tx =
+    MIS_DATA.transactions
+      .find(
+        x =>
+          x.id === id
+      );
+
+
+  if (!tx) {
+
+    alert(
+      "Transaction not found."
+    );
+
+    return;
+
+  }
+
+
+  setValue(
+    "editId",
+    tx.id
+  );
+
+
+  setValue(
+    "editDate",
+    tx.rawDate
+  );
+
+
+  setValue(
+    "editAmount",
+    tx.amount
+  );
+
+
+  setValue(
+    "editNotes",
+    tx.notes
+  );
+
+
+  const source =
+    document.getElementById(
+      "editSource"
+    );
+
+
+  source.innerHTML = "";
+
+
+  Object.keys(
+    MASTER_DATA
+  ).forEach(
+    function(type) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        type;
+
+
+      option.textContent =
+        type;
+
+
+      source.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  source.value =
+    tx.sourceType;
+
+
+  loadEditSubTypes(
+    tx.subType
+  );
+
+
+  setValue(
+    "editMode",
+    tx.mode
+  );
+
+
+  document
+    .getElementById(
+      "editModal"
+    )
+    .classList.add(
+      "show"
+    );
+
+}
+
+
+/*************************************************
+ * EDIT SUB TYPES
+ *************************************************/
+
+function loadEditSubTypes(
+  selected
+) {
+
+  const source =
+    document.getElementById(
+      "editSource"
+    ).value;
+
+
+  const sub =
+    document.getElementById(
+      "editSubType"
+    );
+
+
+  sub.innerHTML = "";
+
+
+  (
+    MASTER_DATA[source] ||
+    []
+  ).forEach(
+    function(item) {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        item;
+
+
+      option.textContent =
+        item;
+
+
+      sub.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (selected) {
+
+    sub.value =
+      selected;
+
+  }
+
+}
+
+
+/*************************************************
+ * SAVE EDIT
+ *************************************************/
+
+async function saveEdit() {
+
+  try {
+
+    setLoading(true);
+
+
+    await apiCall(
+      "edit",
+      {
+
+        id:
+          getValue(
+            "editId"
+          ),
+
+        date:
+          getValue(
+            "editDate"
+          ),
+
+        sourceType:
+          getValue(
+            "editSource"
+          ),
+
+        subType:
+          getValue(
+            "editSubType"
+          ),
+
+        mode:
+          getValue(
+            "editMode"
+          ),
+
+        amount:
+          getValue(
+            "editAmount"
+          ),
+
+        notes:
+          getValue(
+            "editNotes"
+          )
+
+      }
+    );
+
+
+    closeModal();
+
+
+    await loadMIS();
+
+
+    alert(
+      "Transaction updated successfully."
+    );
+
+  }
+
+  catch(error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+  finally {
+
+    setLoading(false);
+
+  }
+
+}
+
+
+/*************************************************
+ * DELETE
+ *************************************************/
+
+async function deleteTx(
+  id
+) {
+
+  const ok =
+    confirm(
+      "Are you sure you want to delete this transaction?"
+    );
+
+
+  if (!ok)
+    return;
+
+
+  try {
+
+    setLoading(true);
+
+
+    await apiCall(
+      "delete",
+      {
+        id: id
+      }
+    );
+
+
+    await loadMIS();
+
+
+    alert(
+      "Transaction deleted successfully."
+    );
+
+  }
+
+  catch(error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+  finally {
+
+    setLoading(false);
+
+  }
+
+}
+
+
+/*************************************************
+ * MODAL
+ *************************************************/
+
+function closeModal() {
+
+  document
+    .getElementById(
+      "editModal"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+/*************************************************
+ * DARK MODE
+ *************************************************/
+
+function toggleDarkMode() {
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+}
+
+
+/*************************************************
+ * PRINT
+ *************************************************/
+
+function printReport() {
+
+  window.print();
+
+}
+
+
+/*************************************************
+ * HELPERS
+ *************************************************/
+
+function setText(
+  id,
+  value
+) {
+
+  const el =
+    document.getElementById(
+      id
+    );
+
+
+  if (el)
+    el.textContent =
+      value;
+
+}
+
+
+function setValue(
+  id,
+  value
+) {
+
+  const el =
+    document.getElementById(
+      id
+    );
+
+
+  if (el)
+    el.value =
+      value;
+
+}
+
+
+function getValue(
+  id
+) {
+
+  const el =
+    document.getElementById(
+      id
+    );
+
+
+  return el
+    ? el.value
+    : "";
+
+}
+
+
+/*************************************************
+ * ESCAPE HTML
+ *************************************************/
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttr(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /'/g,
+      "\\'"
+    );
+
+}
+
+
+
+/*************************************************
+ * SIDEBAR NAVIGATION
+ *************************************************/
+
+function showSection(sectionId, button) {
+
+  document
+    .querySelectorAll(".section")
+    .forEach(function(section) {
+      section.classList.remove("active");
+    });
+
+  const target =
+    document.getElementById(sectionId);
+
+  if (target) {
+    target.classList.add("active");
+  }
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(function(btn) {
+      btn.classList.remove("active");
+    });
+
+  if (button) {
+    button.classList.add("active");
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+/*************************************************
+ * START
+ *************************************************/
+
+
+loadMIS();
+
+
+</script>
+
+</body>
+
+</html>

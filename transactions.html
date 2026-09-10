@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
+
+<title>My Finance</title>
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+
+    font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+    background:#eef1f6;
+
+    color:#172033;
+
+}
+
+button,
+input,
+select,
+textarea{
+
+    font-family:inherit;
+
+}
+
+
+/* =====================================================
+   MAIN APP
+===================================================== */
+
+.app{
+
+    width:100%;
+
+    max-width:520px;
+
+    min-height:100vh;
+
+    margin:auto;
+
+    background:#f7f8fb;
+
+    position:relative;
+
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+
+    background:
+    linear-gradient(
+        145deg,
+        #111827,
+        #1f2937
+    );
+
+    color:white;
+
+    padding:
+    22px 20px 28px;
+
+    border-radius:
+    0 0 30px 30px;
+
+    box-shadow:
+    0 10px 30px rgba(15,23,42,.16);
+
+}
+
+
+.header-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+
+.logo{
+
+    width:46px;
+
+    height:46px;
+
+    border-radius:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:23px;
+
+    background:
+    rgba(255,255,255,.12);
+
+    backdrop-filter:
+    blur(10px);
+
+}
+
+
+.brand-title{
+
+    font-size:20px;
+
+    font-weight:800;
+
+    letter-spacing:-.3px;
+
+}
+
+
+.brand-subtitle{
+
+    font-size:11px;
+
+    opacity:.65;
+
+    margin-top:3px;
+
+}
+
+
+.header-icon{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:13px;
+
+    background:
+    rgba(255,255,255,.1);
+
+    color:white;
+
+    font-size:18px;
+
+}
+
+
+/* =====================================================
+   BALANCE MINI CARD
+===================================================== */
+
+.balance-card{
+
+    margin-top:22px;
+
+    padding:17px 18px;
+
+    border-radius:20px;
+
+    background:
+    rgba(255,255,255,.09);
+
+    border:
+    1px solid rgba(255,255,255,.08);
+
+}
+
+
+.balance-label{
+
+    font-size:11px;
+
+    opacity:.65;
+
+}
+
+
+.balance-value{
+
+    font-size:27px;
+
+    font-weight:800;
+
+    margin-top:4px;
+
+}
+
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
+.content{
+
+    padding:
+    18px;
+
+    padding-bottom:
+    35px;
+
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.section{
+
+    margin-bottom:20px;
+
+}
+
+
+.section-head{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+
+}
+
+
+.section-title{
+
+    font-size:13px;
+
+    font-weight:800;
+
+    color:#344054;
+
+    letter-spacing:.2px;
+
+}
+
+
+.required{
+
+    color:#ef4444;
+
+}
+
+
+.section-hint{
+
+    font-size:10px;
+
+    color:#98a2b3;
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+.date-box{
+
+    position:relative;
+
+    background:white;
+
+    border:
+    1px solid #e5e7eb;
+
+    border-radius:17px;
+
+    padding:14px 15px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    box-shadow:
+    0 4px 14px rgba(15,23,42,.04);
+
+    cursor:pointer;
+
+    user-select:none;
+
+    -webkit-user-select:none;
+
+}
+
+
+.date-box:active{
+
+    transform:scale(.995);
+
+}
+
+
+.date-icon{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:12px;
+
+    background:#f1f5f9;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:19px;
+
+    pointer-events:none;
+
+}
+
+
+.date-info{
+
+    flex:1;
+
+    pointer-events:none;
+
+}
+
+
+.date-small{
+
+    font-size:10px;
+
+    color:#98a2b3;
+
+}
+
+
+.date-value{
+
+    font-size:14px;
+
+    font-weight:750;
+
+    margin-top:2px;
+
+}
+
+
+/*
+   IMPORTANT DATE INPUT
+
+   Input is not visible.
+   Whole date-box handles the click.
+*/
+
+.date-input{
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    width:100%;
+
+    height:100%;
+
+    opacity:0;
+
+    border:0;
+
+    padding:0;
+
+    margin:0;
+
+    pointer-events:none;
+
+}
+
+
+/* =====================================================
+   TYPE GRID
+===================================================== */
+
+.type-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:8px;
+
+}
+
+
+.type-button{
+
+    border:
+    1.5px solid #e5e7eb;
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:13px 5px;
+
+    cursor:pointer;
+
+    transition:.18s;
+
+}
+
+
+.type-button:active{
+
+    transform:scale(.95);
+
+}
+
+
+.type-icon{
+
+    font-size:21px;
+
+    margin-bottom:5px;
+
+}
+
+
+.type-name{
+
+    font-size:10px;
+
+    font-weight:750;
+
+}
+
+
+.type-button.income.active{
+
+    background:#ecfdf3;
+
+    border-color:#86efac;
+
+    color:#15803d;
+
+}
+
+
+.type-button.expense.active{
+
+    background:#fff1f2;
+
+    border-color:#fda4af;
+
+    color:#be123c;
+
+}
+
+
+.type-button.investment.active{
+
+    background:#eff6ff;
+
+    border-color:#93c5fd;
+
+    color:#1d4ed8;
+
+}
+
+
+.type-button.savings.active{
+
+    background:#f5f3ff;
+
+    border-color:#c4b5fd;
+
+    color:#6d28d9;
+
+}
+
+
+/* =====================================================
+   SELECT
+===================================================== */
+
+.select-wrap{
+
+    position:relative;
+
+}
+
+
+.select-icon{
+
+    position:absolute;
+
+    left:14px;
+
+    top:50%;
+
+    transform:
+    translateY(-50%);
+
+    font-size:17px;
+
+    pointer-events:none;
+
+}
+
+
+select{
+
+    appearance:none;
+
+    width:100%;
+
+    border:
+    1px solid #e5e7eb;
+
+    border-radius:16px;
+
+    padding:
+    15px 42px 15px 43px;
+
+    background:white;
+
+    color:#172033;
+
+    font-size:14px;
+
+    outline:none;
+
+    box-shadow:
+    0 4px 14px rgba(15,23,42,.04);
+
+}
+
+
+.select-arrow{
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:
+    translateY(-50%);
+
+    pointer-events:none;
+
+    color:#98a2b3;
+
+}
+
+
+/* =====================================================
+   PAYMENT MODE
+===================================================== */
+
+.mode-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:10px;
+
+}
+
+
+.mode-button{
+
+    border:
+    1.5px solid #e5e7eb;
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    font-size:13px;
+
+    font-weight:750;
+
+    cursor:pointer;
+
+    transition:.18s;
+
+}
+
+
+.mode-button:active{
+
+    transform:scale(.97);
+
+}
+
+
+.mode-button.active{
+
+    background:#111827;
+
+    color:white;
+
+    border-color:#111827;
+
+}
+
+
+/* =====================================================
+   AMOUNT
+===================================================== */
+
+.amount-box{
+
+    background:white;
+
+    border:
+    1px solid #e5e7eb;
+
+    border-radius:20px;
+
+    padding:15px 18px;
+
+    box-shadow:
+    0 4px 14px rgba(15,23,42,.04);
+
+}
+
+
+.amount-label{
+
+    font-size:10px;
+
+    color:#98a2b3;
+
+    margin-bottom:3px;
+
+}
+
+
+.amount-row{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+
+.currency{
+
+    font-size:21px;
+
+    font-weight:800;
+
+    margin-right:6px;
+
+}
+
+
+.amount-input{
+
+    border:none;
+
+    outline:none;
+
+    width:100%;
+
+    font-size:29px;
+
+    font-weight:850;
+
+    color:#111827;
+
+    background:transparent;
+
+}
+
+
+.amount-input::placeholder{
+
+    color:#cbd5e1;
+
+}
+
+
+/* =====================================================
+   NOTES
+===================================================== */
+
+.notes{
+
+    width:100%;
+
+    min-height:82px;
+
+    border:
+    1px solid #e5e7eb;
+
+    border-radius:17px;
+
+    background:white;
+
+    padding:14px;
+
+    resize:none;
+
+    outline:none;
+
+    font-size:13px;
+
+    color:#172033;
+
+    box-shadow:
+    0 4px 14px rgba(15,23,42,.04);
+
+}
+
+
+.notes:focus{
+
+    border-color:#94a3b8;
+
+}
+
+
+/* =====================================================
+   SAVE BUTTON
+===================================================== */
+
+.save-button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:17px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #111827,
+        #273449
+    );
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 10px 22px rgba(17,24,39,.18);
+
+    transition:.18s;
+
+}
+
+
+.save-button:active{
+
+    transform:
+    scale(.98);
+
+}
+
+
+.save-button:disabled{
+
+    opacity:.55;
+
+}
+
+
+/* =====================================================
+   RECENT ENTRY
+===================================================== */
+
+.recent-card{
+
+    background:white;
+
+    border:
+    1px solid #e5e7eb;
+
+    border-radius:20px;
+
+    padding:16px;
+
+    box-shadow:
+    0 4px 14px rgba(15,23,42,.04);
+
+}
+
+
+.recent-head{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:12px;
+
+}
+
+
+.recent-title{
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+
+.recent-link{
+
+    border:none;
+
+    background:none;
+
+    color:#64748b;
+
+    font-size:10px;
+
+}
+
+
+.recent-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+
+    padding:10px 0;
+
+    border-bottom:
+    1px solid #f1f5f9;
+
+}
+
+
+.recent-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+.recent-icon{
+
+    width:37px;
+
+    height:37px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#f8fafc;
+
+}
+
+
+.recent-info{
+
+    flex:1;
+
+}
+
+
+.recent-name{
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+.recent-date{
+
+    font-size:9px;
+
+    color:#98a2b3;
+
+    margin-top:2px;
+
+}
+
+
+.recent-amount{
+
+    font-size:12px;
+
+    font-weight:800;
+
+}
+
+
+/* =====================================================
+   SUCCESS TOAST
+===================================================== */
+
+.toast{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:22px;
+
+    transform:
+    translate(-50%,120px);
+
+    width:
+    calc(100% - 35px);
+
+    max-width:480px;
+
+    background:#111827;
+
+    color:white;
+
+    border-radius:17px;
+
+    padding:14px 16px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.2);
+
+    transition:.35s;
+
+    z-index:1000;
+
+}
+
+
+.toast.show{
+
+    transform:
+    translate(-50%,0);
+
+}
+
+
+.toast-icon{
+
+    width:34px;
+
+    height:34px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.toast-title{
+
+    font-size:12px;
+
+    font-weight:800;
+
+}
+
+
+.toast-sub{
+
+    font-size:10px;
+
+    opacity:.65;
+
+    margin-top:2px;
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    rgba(255,255,255,.65);
+
+    backdrop-filter:
+    blur(5px);
+
+    z-index:2000;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.loading.show{
+
+    display:flex;
+
+}
+
+
+.loading-box{
+
+    background:white;
+
+    padding:20px 28px;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.12);
+
+    text-align:center;
+
+}
+
+
+.spinner{
+
+    width:30px;
+
+    height:30px;
+
+    border:
+    3px solid #e5e7eb;
+
+    border-top-color:#111827;
+
+    border-radius:50%;
+
+    animation:
+    spin .8s linear infinite;
+
+    margin:auto auto 10px;
+
+}
+
+
+@keyframes spin{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+/* =====================================================
+   DESKTOP
+===================================================== */
+
+@media(min-width:700px){
+
+    body{
+
+        padding:30px;
+
+    }
+
+    .app{
+
+        border-radius:30px;
+
+        overflow:hidden;
+
+        box-shadow:
+        0 25px 70px rgba(15,23,42,.12);
+
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media(max-width:360px){
+
+    .content{
+
+        padding:14px;
+
+    }
+
+    .type-grid{
+
+        gap:6px;
+
+    }
+
+    .type-button{
+
+        padding:11px 3px;
+
+    }
+
+    .type-icon{
+
+        font-size:19px;
+
+    }
+
+    .amount-input{
+
+        font-size:26px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<!-- ===================================================
+     HEADER
+=================================================== -->
+
+<header class="header">
+
+    <div class="header-row">
+
+        <div class="brand">
+
+            <div class="logo">
+                💰
+            </div>
+
+            <div>
+
+                <div class="brand-title">
+                    My Finance
+                </div>
+
+                <div class="brand-subtitle">
+                    Personal Finance Tracker
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="header-icon"
+            type="button">
+
+            ⋮
+
+        </button>
+
+    </div>
+
+
+    <div class="balance-card">
+
+        <div class="balance-label">
+            Today's Entry
+        </div>
+
+        <div
+            class="balance-value"
+            id="todayCount">
+
+            0 Transactions
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ===================================================
+     CONTENT
+=================================================== -->
+
+<main class="content">
+
+
+<!-- ===================================================
+     DATE
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            📅 TRANSACTION DATE
+
+            <span class="required">*</span>
+
+        </div>
+
+        <div class="section-hint">
+
+            Default: Today
+
+        </div>
+
+    </div>
+
+
+    <!--
+        IMPORTANT:
+        Clicking anywhere on this box opens
+        the native calendar.
+    -->
+
+    <div
+        class="date-box"
+        id="dateBox"
+        onpointerdown="openDatePicker(event)">
+
+        <div class="date-icon">
+            📅
+        </div>
+
+
+        <div class="date-info">
+
+            <div class="date-small">
+                Selected Date
+            </div>
+
+            <div
+                class="date-value"
+                id="dateText">
+
+            </div>
+
+        </div>
+
+
+        <input
+            type="date"
+            id="date"
+            class="date-input"
+            onchange="updateDate()">
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     TRANSACTION TYPE
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            TRANSACTION TYPE
+
+            <span class="required">*</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="type-grid">
+
+
+        <button
+            type="button"
+            class="type-button income"
+            onclick="selectType('Income',this)">
+
+            <div class="type-icon">
+                💵
+            </div>
+
+            <div class="type-name">
+                Income
+            </div>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="type-button expense"
+            onclick="selectType('Expense',this)">
+
+            <div class="type-icon">
+                💸
+            </div>
+
+            <div class="type-name">
+                Expense
+            </div>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="type-button investment"
+            onclick="selectType('Investment',this)">
+
+            <div class="type-icon">
+                📈
+            </div>
+
+            <div class="type-name">
+                Invest
+            </div>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="type-button savings"
+            onclick="selectType('Savings',this)">
+
+            <div class="type-icon">
+                💰
+            </div>
+
+            <div class="type-name">
+                Savings
+            </div>
+
+        </button>
+
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     CATEGORY
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            CATEGORY
+
+            <span class="required">*</span>
+
+        </div>
+
+        <div
+            class="section-hint"
+            id="categoryHint">
+
+            Select type first
+
+        </div>
+
+    </div>
+
+
+    <div class="select-wrap">
+
+        <div
+            class="select-icon"
+            id="categoryIcon">
+
+            🗂️
+
+        </div>
+
+
+        <select
+            id="subType"
+            onchange="categoryChanged()">
+
+            <option value="">
+                Select transaction type first
+            </option>
+
+        </select>
+
+
+        <div class="select-arrow">
+            ▼
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     PAYMENT MODE
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            PAYMENT MODE
+
+            <span class="required">*</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="mode-grid">
+
+
+        <button
+            type="button"
+            class="mode-button"
+            onclick="selectMode('Bank',this)">
+
+            <span>🏦</span>
+
+            Bank
+
+        </button>
+
+
+        <button
+            type="button"
+            class="mode-button"
+            onclick="selectMode('Cash',this)">
+
+            <span>💵</span>
+
+            Cash
+
+        </button>
+
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     AMOUNT
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            AMOUNT
+
+            <span class="required">*</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="amount-box">
+
+        <div class="amount-label">
+            Enter transaction amount
+        </div>
+
+
+        <div class="amount-row">
+
+            <span class="currency">
+                ₹
+            </span>
+
+
+            <input
+                type="number"
+                id="amount"
+                class="amount-input"
+                inputmode="decimal"
+                placeholder="0.00"
+                min="0"
+                step="0.01">
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     NOTES
+=================================================== -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            📝 NOTES / DESCRIPTION
+
+        </div>
+
+        <div class="section-hint">
+
+            Optional
+
+        </div>
+
+    </div>
+
+
+    <textarea
+        id="notes"
+        class="notes"
+        placeholder="Add a short note..."></textarea>
+
+</section>
+
+
+<!-- ===================================================
+     SAVE
+=================================================== -->
+
+<section class="section">
+
+    <button
+        type="button"
+        class="save-button"
+        id="saveButton"
+        onclick="saveTransaction()">
+
+        ✓ &nbsp; SAVE TRANSACTION
+
+    </button>
+
+</section>
+
+
+<!-- ===================================================
+     RECENT
+=================================================== -->
+
+<section class="section">
+
+    <div class="recent-card">
+
+        <div class="recent-head">
+
+            <div class="recent-title">
+                🕘 Recent Entry
+            </div>
+
+            <button
+                class="recent-link"
+                type="button">
+
+                Today
+
+            </button>
+
+        </div>
+
+
+        <div id="recentList">
+
+            <div class="recent-item">
+
+                <div class="recent-icon">
+                    💳
+                </div>
+
+                <div class="recent-info">
+
+                    <div class="recent-name">
+                        No transactions yet
+                    </div>
+
+                    <div class="recent-date">
+                        Your latest entry will appear here
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+</div>
+
+
+<!-- ===================================================
+     TOAST
+=================================================== -->
+
+<div
+    class="toast"
+    id="toast">
+
+    <div class="toast-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <div
+            class="toast-title"
+            id="toastTitle">
+
+            Transaction Saved
+
+        </div>
+
+        <div
+            class="toast-sub"
+            id="toastSub">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================
+     LOADING
+=================================================== -->
+
+<div
+    class="loading"
+    id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div>
+            Saving...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbwgbe-pzi-IJrAwJSzk8NNOjwM0mFL5sy0Hw4vEpRfU1Sag7fmGTIqip1QyjvFW29vSEQ/exec";
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
+let masterData = {};
+
+let selectedType = "";
+
+let selectedMode = "";
+
+let selectedCategory = "";
+
+let todayTransactions = 0;
+
+
+/* =====================================================
+   START
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        setToday();
+
+        loadMasterData();
+
+    }
+);
+
+
+/* =====================================================
+   SET TODAY
+===================================================== */
+
+function setToday(){
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const today =
+        year +
+        "-" +
+        month +
+        "-" +
+        day;
+
+
+    const dateInput =
+        document.getElementById(
+            "date"
+        );
+
+
+    dateInput.value =
+        today;
+
+
+    updateDate();
+
+}
+
+
+/* =====================================================
+   OPEN DATE PICKER
+   DESKTOP + MOBILE
+===================================================== */
+
+function openDatePicker(event){
+
+    /*
+       Stop the event from causing
+       unexpected duplicate actions.
+    */
+
+    if(event){
+
+        event.preventDefault();
+
+    }
+
+
+    const dateInput =
+        document.getElementById(
+            "date"
+        );
+
+
+    if(!dateInput)
+        return;
+
+
+    /*
+       Modern Chrome / Edge / Android
+    */
+
+    if(
+        typeof dateInput.showPicker ===
+        "function"
+    ){
+
+        try{
+
+            dateInput.showPicker();
+
+            return;
+
+        }
+        catch(error){
+
+            console.log(
+                "showPicker fallback:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+       Fallback for browsers
+       without showPicker()
+    */
+
+    try{
+
+        dateInput.focus();
+
+        dateInput.click();
+
+    }
+    catch(error){
+
+        console.log(
+            "Date picker fallback:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   UPDATE DATE
+===================================================== */
+
+function updateDate(){
+
+    const value =
+        document
+        .getElementById(
+            "date"
+        )
+        .value;
+
+
+    if(!value){
+
+        document
+            .getElementById(
+                "dateText"
+            )
+            .textContent =
+            "Select Date";
+
+        return;
+
+    }
+
+
+    const date =
+        new Date(
+            value +
+            "T00:00:00"
+        );
+
+
+    document
+        .getElementById(
+            "dateText"
+        )
+        .textContent =
+        date.toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"short",
+                day:"2-digit",
+                month:"long",
+                year:"numeric"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   LOAD MASTER DATA
+===================================================== */
+
+function loadMasterData(){
+
+    const callback =
+        "master_" +
+        Date.now();
+
+
+    window[callback] =
+        function(response){
+
+            if(
+                response &&
+                response.success
+            ){
+
+                masterData =
+                    response.data || {};
+
+            }
+
+
+            delete window[
+                callback
+            ];
+
+        };
+
+
+    const script =
+        document.createElement(
+            "script"
+        );
+
+
+    script.src =
+        API_URL +
+        "?action=master" +
+        "&callback=" +
+        callback;
+
+
+    script.onerror =
+        function(){
+
+            console.error(
+                "Master data loading failed"
+            );
+
+        };
+
+
+    document.body.appendChild(
+        script
+    );
+
+}
+
+
+/* =====================================================
+   TYPE
+===================================================== */
+
+function selectType(
+    type,
+    button
+){
+
+    selectedType =
+        type;
+
+
+    selectedCategory =
+        "";
+
+
+    document
+        .querySelectorAll(
+            ".type-button"
+        )
+        .forEach(
+            function(btn){
+
+                btn.classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    renderCategories();
+
+}
+
+
+/* =====================================================
+   CATEGORY
+===================================================== */
+
+function renderCategories(){
+
+    const select =
+        document.getElementById(
+            "subType"
+        );
+
+
+    select.innerHTML =
+        `<option value="">
+            Select category
+        </option>`;
+
+
+    const categories =
+        masterData[selectedType] ||
+        [];
+
+
+    categories.forEach(
+        function(category){
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                category;
+
+
+            option.textContent =
+                category;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "categoryHint"
+        )
+        .textContent =
+        selectedType +
+        " categories";
+
+
+    updateCategoryIcon();
+
+}
+
+
+function categoryChanged(){
+
+    selectedCategory =
+        document
+        .getElementById(
+            "subType"
+        )
+        .value;
+
+}
+
+
+/* =====================================================
+   CATEGORY ICON
+===================================================== */
+
+function updateCategoryIcon(){
+
+    const icon =
+        document.getElementById(
+            "categoryIcon"
+        );
+
+
+    if(selectedType === "Income"){
+
+        icon.textContent =
+            "💵";
+
+    }
+
+    else if(
+        selectedType === "Expense"
+    ){
+
+        icon.textContent =
+            "💸";
+
+    }
+
+    else if(
+        selectedType === "Investment"
+    ){
+
+        icon.textContent =
+            "📈";
+
+    }
+
+    else if(
+        selectedType === "Savings"
+    ){
+
+        icon.textContent =
+            "💰";
+
+    }
+
+    else{
+
+        icon.textContent =
+            "🗂️";
+
+    }
+
+}
+
+
+/* =====================================================
+   MODE
+===================================================== */
+
+function selectMode(
+    mode,
+    button
+){
+
+    selectedMode =
+        mode;
+
+
+    document
+        .querySelectorAll(
+            ".mode-button"
+        )
+        .forEach(
+            function(btn){
+
+                btn.classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+
+    button.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   VALIDATION
+===================================================== */
+
+function validate(){
+
+    const date =
+        document
+        .getElementById(
+            "date"
+        )
+        .value;
+
+
+    const amount =
+        document
+        .getElementById(
+            "amount"
+        )
+        .value;
+
+
+    if(!date){
+
+        alert(
+            "Please select date."
+        );
+
+        return false;
+
+    }
+
+
+    if(!selectedType){
+
+        alert(
+            "Please select transaction type."
+        );
+
+        return false;
+
+    }
+
+
+    if(!selectedCategory){
+
+        alert(
+            "Please select category."
+        );
+
+        return false;
+
+    }
+
+
+    if(!selectedMode){
+
+        alert(
+            "Please select Bank or Cash."
+        );
+
+        return false;
+
+    }
+
+
+    if(
+        !amount ||
+        Number(amount) <= 0
+    ){
+
+        alert(
+            "Please enter a valid amount."
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =====================================================
+   SAVE TRANSACTION
+===================================================== */
+
+function saveTransaction(){
+
+    if(!validate())
+        return;
+
+
+    const date =
+        document
+        .getElementById(
+            "date"
+        )
+        .value;
+
+
+    const amount =
+        document
+        .getElementById(
+            "amount"
+        )
+        .value;
+
+
+    const notes =
+        document
+        .getElementById(
+            "notes"
+        )
+        .value
+        .trim();
+
+
+    showLoading();
+
+
+    const callback =
+        "save_" +
+        Date.now();
+
+
+    window[callback] =
+        function(response){
+
+            hideLoading();
+
+
+            delete window[
+                callback
+            ];
+
+
+            if(
+                response &&
+                response.success
+            ){
+
+                todayTransactions++;
+
+
+                updateTodayCount();
+
+
+                addRecentEntry({
+
+                    type:
+                        selectedType,
+
+                    category:
+                        selectedCategory,
+
+                    mode:
+                        selectedMode,
+
+                    amount:
+                        Number(
+                            amount
+                        ),
+
+                    date:
+                        date,
+
+                    notes:
+                        notes
+
+                });
+
+
+                showToast(
+                    "Transaction Saved",
+                    "₹" +
+                    Number(
+                        amount
+                    ).toLocaleString(
+                        "en-IN"
+                    ) +
+                    " • " +
+                    selectedCategory
+                );
+
+
+                clearEntry();
+
+            }
+
+            else{
+
+                alert(
+                    response &&
+                    response.message
+                    ? response.message
+                    : "Unable to save transaction."
+                );
+
+            }
+
+        };
+
+
+    const params =
+        new URLSearchParams({
+
+            action:
+                "save",
+
+            callback:
+                callback,
+
+            date:
+                date,
+
+            sourceType:
+                selectedType,
+
+            subType:
+                selectedCategory,
+
+            mode:
+                selectedMode,
+
+            amount:
+                amount,
+
+            notes:
+                notes
+
+        });
+
+
+    const script =
+        document.createElement(
+            "script"
+        );
+
+
+    script.src =
+        API_URL +
+        "?" +
+        params.toString();
+
+
+    script.onerror =
+        function(){
+
+            hideLoading();
+
+
+            delete window[
+                callback
+            ];
+
+
+            alert(
+                "Network error. Please try again."
+            );
+
+        };
+
+
+    document.body.appendChild(
+        script
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR AFTER SAVE
+===================================================== */
+
+function clearEntry(){
+
+    selectedCategory =
+        "";
+
+
+    selectedMode =
+        "";
+
+
+    document
+        .getElementById(
+            "subType"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "amount"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "notes"
+        )
+        .value = "";
+
+
+    document
+        .querySelectorAll(
+            ".mode-button"
+        )
+        .forEach(
+            function(btn){
+
+                btn.classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   RECENT ENTRY
+===================================================== */
+
+function addRecentEntry(data){
+
+    const list =
+        document.getElementById(
+            "recentList"
+        );
+
+
+    const empty =
+        list.querySelector(
+            ".recent-name"
+        );
+
+
+    if(
+        empty &&
+        empty.textContent ===
+        "No transactions yet"
+    ){
+
+        list.innerHTML =
+            "";
+
+    }
+
+
+    const item =
+        document.createElement(
+            "div"
+        );
+
+
+    item.className =
+        "recent-item";
+
+
+    let icon =
+        "💳";
+
+
+    if(
+        data.type ===
+        "Income"
+    ){
+
+        icon =
+            "💵";
+
+    }
+
+
+    if(
+        data.type ===
+        "Expense"
+    ){
+
+        icon =
+            "💸";
+
+    }
+
+
+    if(
+        data.type ===
+        "Investment"
+    ){
+
+        icon =
+            "📈";
+
+    }
+
+
+    if(
+        data.type ===
+        "Savings"
+    ){
+
+        icon =
+            "💰";
+
+    }
+
+
+    const date =
+        new Date(
+            data.date +
+            "T00:00:00"
+        );
+
+
+    item.innerHTML = `
+
+        <div class="recent-icon">
+            ${icon}
+        </div>
+
+        <div class="recent-info">
+
+            <div class="recent-name">
+                ${escapeHTML(
+                    data.category
+                )}
+            </div>
+
+            <div class="recent-date">
+                ${date.toLocaleDateString(
+                    "en-IN",
+                    {
+                        day:"2-digit",
+                        month:"short"
+                    }
+                )}
+                •
+                ${escapeHTML(
+                    data.mode
+                )}
+            </div>
+
+        </div>
+
+        <div class="recent-amount">
+
+            ₹${Number(
+                data.amount
+            ).toLocaleString(
+                "en-IN"
+            )}
+
+        </div>
+
+    `;
+
+
+    list.prepend(
+        item
+    );
+
+
+    while(
+        list.children.length > 3
+    ){
+
+        list.removeChild(
+            list.lastChild
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TODAY COUNT
+===================================================== */
+
+function updateTodayCount(){
+
+    document
+        .getElementById(
+            "todayCount"
+        )
+        .textContent =
+        todayTransactions +
+        (
+            todayTransactions === 1
+            ? " Transaction"
+            : " Transactions"
+        );
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function showToast(
+    title,
+    subtitle
+){
+
+    document
+        .getElementById(
+            "toastTitle"
+        )
+        .textContent =
+        title;
+
+
+    document
+        .getElementById(
+            "toastSub"
+        )
+        .textContent =
+        subtitle;
+
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        function(){
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },
+        3000
+    );
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function showLoading(){
+
+    document
+        .getElementById(
+            "loading"
+        )
+        .classList.add(
+            "show"
+        );
+
+}
+
+
+function hideLoading(){
+
+    document
+        .getElementById(
+            "loading"
+        )
+        .classList.remove(
+            "show"
+        );
+
+}
+
+
+/* =====================================================
+   SECURITY
+===================================================== */
+
+function escapeHTML(value){
+
+    return String(
+        value || ""
+    )
+    .replace(
+        /[&<>"']/g,
+        function(char){
+
+            const map = {
+
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#039;"
+
+            };
+
+            return map[char];
+
+        }
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
