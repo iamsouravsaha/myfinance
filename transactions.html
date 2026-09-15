@@ -1790,6 +1790,17 @@ let selectedCategory = "";
 
 let todayTransactions = 0;
 
+// Local fallback prevents the dependent dropdown from becoming unusable
+// when Google Apps Script is temporarily slow/unavailable.
+const FALLBACK_MASTER_DATA = {
+    Income: ["Salary","Professional Fee","Interest","Others"],
+    Expense: ["Electricity","Maa","Baba","Moni","Others"],
+    Investment: ["SIP","PF"],
+    Savings: ["BOB","KBL"]
+};
+
+let masterLoaded = false;
+
 
 /* =====================================================
    START
@@ -1874,11 +1885,8 @@ function openDatePicker(event){
        unexpected duplicate actions.
     */
 
-    if(event){
-
-        event.preventDefault();
-
-    }
+    // Do not prevent the pointer event here; some mobile browsers
+    // require the native picker to be opened directly from the gesture.
 
 
     const dateInput =
@@ -2002,37 +2010,84 @@ function updateDate(){
 
 function loadMasterData(){
 
+    // Always make the form usable immediately.
+    masterData =
+        JSON.parse(
+            localStorage.getItem("myFinanceMaster") || "null"
+        ) || FALLBACK_MASTER_DATA;
+
+    masterLoaded = true;
+
+    // If a type has already been selected, refresh its dropdown.
+    if (selectedType) {
+        renderCategories();
+    }
+
     const callback =
         "master_" +
-        Date.now();
+        Date.now() +
+        "_" +
+        Math.floor(Math.random() * 10000);
 
+    let finished = false;
+
+    const script =
+        document.createElement("script");
+
+    const timer =
+        setTimeout(function(){
+
+            if (finished) return;
+
+            finished = true;
+            delete window[callback];
+            if (script.parentNode) script.remove();
+
+            console.warn(
+                "Master data request timed out. Local fallback remains active."
+            );
+
+        }, 8000);
 
     window[callback] =
         function(response){
 
-            if(
+            if (finished) return;
+
+            finished = true;
+            clearTimeout(timer);
+
+            delete window[callback];
+
+            if (script.parentNode) {
+                script.remove();
+            }
+
+            if (
                 response &&
-                response.success
+                response.success &&
+                response.data
             ){
 
                 masterData =
-                    response.data || {};
+                    response.data;
+
+                try {
+                    localStorage.setItem(
+                        "myFinanceMaster",
+                        JSON.stringify(masterData)
+                    );
+                } catch(e) {}
+
+                masterLoaded = true;
+
+                if (selectedType) {
+                    renderCategories();
+                }
 
             }
 
-
-            delete window[
-                callback
-            ];
-
         };
-
-
-    const script =
-        document.createElement(
-            "script"
-        );
-
 
     script.src =
         API_URL +
@@ -2040,21 +2095,29 @@ function loadMasterData(){
         "&callback=" +
         callback;
 
+    script.async = true;
 
     script.onerror =
         function(){
 
-            console.error(
-                "Master data loading failed"
+            if (finished) return;
+
+            finished = true;
+            clearTimeout(timer);
+
+            delete window[callback];
+
+            if (script.parentNode) {
+                script.remove();
+            }
+
+            console.warn(
+                "Master data API failed. Local fallback remains active."
             );
 
         };
 
-
-    document.body.appendChild(
-        script
-    );
-
+    document.body.appendChild(script);
 }
 
 
@@ -2069,6 +2132,11 @@ function selectType(
 
     selectedType =
         type;
+
+    // Safety fallback in case the API has not responded yet.
+    if (!masterData[type] || !masterData[type].length) {
+        masterData[type] = FALLBACK_MASTER_DATA[type] || [];
+    }
 
 
     selectedCategory =
@@ -2361,50 +2429,67 @@ function saveTransaction(){
     if(!validate())
         return;
 
-
     const date =
-        document
-        .getElementById(
-            "date"
-        )
-        .value;
-
+        document.getElementById("date").value;
 
     const amount =
-        document
-        .getElementById(
-            "amount"
-        )
-        .value;
-
+        document.getElementById("amount").value;
 
     const notes =
-        document
-        .getElementById(
-            "notes"
-        )
-        .value
-        .trim();
-
+        document.getElementById("notes").value.trim();
 
     showLoading();
 
-
     const callback =
         "save_" +
-        Date.now();
+        Date.now() +
+        "_" +
+        Math.floor(Math.random() * 10000);
 
+    let finished = false;
+
+    const script =
+        document.createElement("script");
+
+    const timeout =
+        setTimeout(function(){
+
+            if (finished) return;
+
+            finished = true;
+
+            delete window[callback];
+
+            if (script.parentNode) {
+                script.remove();
+            }
+
+            hideLoading();
+
+            alert(
+                "The server is taking too long to respond. " +
+                "Please check the MIS/Google Sheet before submitting again, " +
+                "to avoid creating a duplicate transaction."
+            );
+
+        }, 15000);
 
     window[callback] =
         function(response){
 
+            if (finished) return;
+
+            finished = true;
+
+            clearTimeout(timeout);
+
+            delete window[callback];
+
+            if (script.parentNode) {
+                script.remove();
+            }
+
             hideLoading();
-
-
-            delete window[
-                callback
-            ];
-
 
             if(
                 response &&
@@ -2413,52 +2498,28 @@ function saveTransaction(){
 
                 todayTransactions++;
 
-
                 updateTodayCount();
 
-
                 addRecentEntry({
-
-                    type:
-                        selectedType,
-
-                    category:
-                        selectedCategory,
-
-                    mode:
-                        selectedMode,
-
-                    amount:
-                        Number(
-                            amount
-                        ),
-
-                    date:
-                        date,
-
-                    notes:
-                        notes
-
+                    type: selectedType,
+                    category: selectedCategory,
+                    mode: selectedMode,
+                    amount: Number(amount),
+                    date: date,
+                    notes: notes
                 });
-
 
                 showToast(
                     "Transaction Saved",
                     "₹" +
-                    Number(
-                        amount
-                    ).toLocaleString(
-                        "en-IN"
-                    ) +
+                    Number(amount).toLocaleString("en-IN") +
                     " • " +
                     selectedCategory
                 );
 
-
                 clearEntry();
 
             }
-
             else{
 
                 alert(
@@ -2472,71 +2533,50 @@ function saveTransaction(){
 
         };
 
-
     const params =
         new URLSearchParams({
-
-            action:
-                "save",
-
-            callback:
-                callback,
-
-            date:
-                date,
-
-            sourceType:
-                selectedType,
-
-            subType:
-                selectedCategory,
-
-            mode:
-                selectedMode,
-
-            amount:
-                amount,
-
-            notes:
-                notes
-
+            action: "save",
+            callback: callback,
+            date: date,
+            sourceType: selectedType,
+            subType: selectedCategory,
+            mode: selectedMode,
+            amount: amount,
+            notes: notes
         });
-
-
-    const script =
-        document.createElement(
-            "script"
-        );
-
 
     script.src =
         API_URL +
         "?" +
         params.toString();
 
+    script.async = true;
 
     script.onerror =
         function(){
 
+            if (finished) return;
+
+            finished = true;
+
+            clearTimeout(timeout);
+
+            delete window[callback];
+
+            if (script.parentNode) {
+                script.remove();
+            }
+
             hideLoading();
 
-
-            delete window[
-                callback
-            ];
-
-
             alert(
-                "Network error. Please try again."
+                "Network error while saving. " +
+                "Please check the MIS before trying again."
             );
 
         };
 
-
-    document.body.appendChild(
-        script
-    );
-
+    document.body.appendChild(script);
 }
 
 
